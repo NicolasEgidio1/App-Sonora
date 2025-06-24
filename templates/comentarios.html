@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Meus Comentários</title>
+<!-- Font Awesome (para os ícones da barra lateral) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .pagina {
+            margin-left: 250px;
+            padding: 40px;
+        }
+        .comentario-box {
+            background-color: #006400;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,255,0,0.2);
+        }
+        .comentario-box h3 {
+            margin-top: 0;
+            color: #1DB954;
+        }
+        .comentario-box p {
+            margin: 5px 0;
+        }
+        .sidebar {
+            position: fixed;
+            width: 220px;
+            height: 100%;
+            background-color: #111;
+            color: white;
+            padding: 20px 0;
+        }
+        .sidebar .logo-img {
+            width: 100%;
+            padding: 0 10px;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin-top: 30px;
+        }
+        .sidebar-menu li {
+            padding: 10px 20px;
+        }
+        .sidebar-menu li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+        .sidebar-menu li a:hover {
+            background-color: #222;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>
+            <a href="/home">
+                <img src="/static/SONORA-27-03-2025.png" alt="Logo Sonora" class="logo-img">
+            </a>
+        </h2>
+        <ul class="sidebar-menu">
+            <li><a href="/perfil"><i class="fas fa-user"></i> Perfil</a></li>
+            <li><a href="/favoritos"><i class="fas fa-heart"></i> Favoritos</a></li>
+            <li><a href="/comentarios"><i class="fas fa-comments"></i> Comentários</a></li>
+            <li><a href="/logout" class="sair"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+    </div>
+
+    <div class="pagina">
+        <h1>Seus Comentários</h1>
+        {% if comentarios %}
+            {% for comentario in comentarios %}
+                <div class="comentario-box">
+                    <h3>{{ comentario.musica }} - {{ comentario.artista }}</h3>
+                    <p><strong>Trecho:</strong> {{ comentario.trecho }}</p>
+                    <p><strong>Comentário:</strong> {{ comentario.comentario }}</p>
+                    <p><small>{{ comentario.data_criacao }}</small></p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Você ainda não comentou nenhuma música.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

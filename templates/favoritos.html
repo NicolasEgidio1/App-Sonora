@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Minhas Músicas Favoritas</title>
+    <link rel="stylesheet" href="/static/css/favoritos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="/static/img/logo-removebg-preview.png">
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>
+            <a href="/home">
+                <img src="/static/SONORA-27-03-2025.png" alt="Logo Sonora" class="logo-img">
+            </a>
+        </h2>
+        
+        <ul class="sidebar-menu">
+            <li><a href="/perfil"><i class="fas fa-user"></i> Perfil</a></li>
+            <li><a href="/favoritos"><i class="fas fa-heart"></i> Favoritos</a></li>
+            <li><a href="/comentarios"><i class="fas fa-comments"></i> Comentários</a></li>
+            <li><a href="/logout" class="sair"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="profile-box">
+            <h2>Minhas Músicas Favoritas</h2>
+
+            <ul>
+                {% for fav in favoritos %}
+                    <li>
+                        <div class="card">
+                            <h5 class="card-title">
+                                <a href="{{ url_for('buscar_letra') }}?artista={{ fav.artista|urlencode }}&musica={{ fav.musica|urlencode }}">
+                                    {{ fav.musica }}
+                                </a>
+                            </h5>
+                            <p class="card-text">Artista: {{ fav.artista }}</p>
+                        </div>
+                    </li>
+                {% else %}
+                    <p>Você ainda não favoritou nenhuma música.</p>
+                {% endfor %}
+            </ul>
+
+            <button onclick="window.history.back()">Voltar</button>
+        </div>
+    </div>
+
+</body>
+</html>

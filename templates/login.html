@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <!-- Link para o CSS externo -->
+    <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="icon" type="image/png" href="/static/SONORA-27-03-2025.png">
+
+    <!-- Link para o Font Awesome para ícones -->
+    <script src="https://kit.fontawesome.com/d47de159c9.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <img src="/static/SONORA-27-03-2025.png" alt="Logo" style="width: 450px;">
+
+    <div id="form">
+        <form method="post">
+            <div class="logo_login">
+                <h2>Entrar</h2>
+            </div>
+
+            <!-- Campo de entrada de email -->
+            <label for="email">Email</label>
+            <div class="input-container">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="text" placeholder="Digite seu email" name="email" id="email" required>
+            </div>
+
+            <!-- Campo de entrada de senha -->
+            <label for="senha">Senha</label>
+            <div class="input-container">
+                <i class="fa-sharp fa-solid fa-lock"></i>
+                <input type="password" placeholder="Digite sua senha" name="senha" id="senha" required>
+            </div>
+
+            <!-- Botão de login -->
+            <div id="btn">
+                <button type="submit" class="submit-btn">Entrar</button>
+            </div>
+        </form>
+
+        <!-- Link para criar uma conta -->
+        <div class="criar_conta">
+            <form action="entra_criar_conta">
+                <p>Ainda não tem uma conta? <button type="submit" class="create-account-btn">Criar Conta</button></p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

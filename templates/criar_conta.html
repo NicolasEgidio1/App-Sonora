@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css')}}">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="icon" type="image/png" href="/static/img/logo-removebg-preview.png">
+    <style>
+        .form-step {
+            display: none;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .form-step.visible {
+            display: block;
+            transform: translateX(0);
+        }
+
+        .next-btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .next-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="artista_log" id="form">
+        <form action="cadastrar_usuario" method="post">
+            <div id="form1" class="form-step">
+                <div>
+                    <h1>Qual é o seu nome</h1>
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                <button type="button" class="next-btn" onclick="nextForm(1)">Próxima</button>
+            </div>
+            <div id="form2" class="form-step">
+                <div>
+                    <h1>Informe o seu Sexo</h1>
+                    <label for="sexo">Sexo</label>
+                    <select class="form-select" id="sexo" name="sexo" required>
+                        <option value="">Selecione</option>
+                        <option value="1">Masculino</option>
+                        <option value="2">Feminino</option>
+                    </select>
+                </div>
+                <button type="button" class="next-btn" onclick="nextForm(2)">Próxima</button>
+            </div>
+            <div id="form3" class="form-step">
+                <div>
+                    <h1>Digite seu número de Telefone</h1>
+                    <label for="telefone">Telefone</label>
+                    <input type="text" id="telefone" name="telefone" required>
+                </div>
+                <button type="button" class="next-btn" onclick="nextForm(3)">Próxima</button>
+            </div>
+            <div id="form4" class="form-step">
+                <div>
+                    <h1>Digite o seu CPF</h1>
+                    <label for="cpf">CPF</label>
+                    <input type="text" id="cpf" name="cpf" required>
+                </div>
+                <button type="button" class="next-btn" onclick="nextForm(4)">Próxima</button>
+            </div>
+            <div id="form5" class="form-step">
+                <div>
+                    <h1>Digite o seu melhor email</h1>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <button type="button" class="next-btn" onclick="nextForm(5)">Próxima</button>
+            </div>
+            <div id="form6" class="form-step">
+                <div>
+                    <h1>Crie uma senha</h1>
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required>
+                </div>
+                <button type="submit" class="next-btn">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://kit.fontawesome.com/d47de159c9.js" crossorigin="anonymous"></script>
+    <script>
+        let currentForm = 1;
+
+        // Função para exibir o próximo formulário
+        function nextForm(formNumber) {
+            const currentFormElement = document.getElementById(`form${currentForm}`);
+            const nextFormElement = document.getElementById(`form${formNumber + 1}`);
+
+            // Ocultar o formulário atual
+            currentFormElement.classList.remove("visible");
+
+            // Exibir o próximo formulário
+            if (nextFormElement) {
+                nextFormElement.classList.add("visible");
+            }
+
+            // Atualizar o número do formulário atual
+            currentForm = formNumber + 1;
+        }
+
+        // Inicializar o primeiro formulário
+        document.addEventListener("DOMContentLoaded", () => {
+            const firstForm = document.getElementById("form1");
+            firstForm.classList.add("visible");
+        });
+
+        // Funções de validação (CPF e Celular)
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/[^\d]+/g, '');
+            if (cpf.length !== 11) return false;
+
+            let numeros, digitos, soma, resultado, digitos_iguais;
+            digitos_iguais = 1;
+
+            for (let i = 0; i < 10; i++) if (cpf.charAt(i) !== cpf.charAt(i + 1)) { digitos_iguais = 0; break; }
+            if (!digitos_iguais) {
+                numeros = cpf.substring(0, 9);
+                digitos = cpf.substring(9);
+                soma = 0;
+                for (let i = 10; i > 1; i--) soma += numeros.charAt(10 - i) * i;
+                resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+                if (resultado !== parseInt(digitos.charAt(0))) return false;
+
+                numeros = cpf.substring(0, 10);
+                soma = 0;
+                for (let i = 11; i > 1; i--) soma += numeros.charAt(11 - i) * i;
+                resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+                if (resultado !== parseInt(digitos.charAt(1))) return false;
+
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function validarCelular(celular) {
+            const regex = /^\(?([0-9]{2})\)?[-. ]?([0-9]{5})[-. ]?([0-9]{4})$/;
+            return regex.test(celular);
+        }
+
+        // Validação no envio do formulário (apenas na última etapa)
+        document.querySelector('#form6 form').addEventListener('submit', function (event) {
+            const cpf = document.querySelector('#cpf').value;
+            const celular = document.querySelector('#telefone').value;
+
+            // Validações CPF e celular
+            if (!validarCPF(cpf)) {
+                event.preventDefault();  // Impede o envio do formulário
+                alert('CPF inválido!');
+                return false;
+            }
+
+            if (!validarCelular(celular)) {
+                event.preventDefault();  // Impede o envio do formulário
+                alert('Número de celular inválido!');
+                return false;
+            }
+        });
+
+    </script>
+</body>
+</html>

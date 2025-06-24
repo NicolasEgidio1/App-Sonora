@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ musica }} - {{ artista }}</title>
+    <link rel="stylesheet" href="/static/css/buscar_letra.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/static/img/logo-removebg-preview.png">
+    <style>
+        .comentario-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+            background-color: #222;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+        }
+
+        .comentario-foto {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #1DB954;
+            flex-shrink: 0;
+        }
+
+        .comentario-texto {
+            color: #eee;
+            font-size: 14px;
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+
+        .comentario-texto strong {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .comentario-texto small {
+            color: #aaa;
+            font-size: 12px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .verso {
+            padding: 8px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .verso:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+        }
+
+        #comentario-lateral {
+            position: fixed;
+            right: -350px;
+            top: 0;
+            height: 100%;
+            width: 350px;
+            background-color: #111;
+            color: white;
+            padding: 20px;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.4);
+            transition: right 0.3s ease;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #comentario-lateral.show {
+            right: 0;
+        }
+
+        .comentario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #comentarios-lista {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            background-color: #222;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #input-comentario {
+            width: 100%;
+            height: 60px;
+            border: none;
+            border-radius: 5px;
+            padding: 8px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        #comentario-lateral button {
+            background-color: #1DB954;
+            border: none;
+            padding: 10px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>
+        <a href="/home">
+            <img src="/static/SONORA-27-03-2025.png" alt="Logo Sonora" class="logo-img">
+        </a>
+    </h2>
+    <ul class="sidebar-menu">
+        <li><a href="/perfil"><i class="fas fa-user"></i> Perfil</a></li>
+        <li><a href="/favoritos"><i class="fas fa-heart"></i> Favoritos</a></li>
+        <li><a href="/comentarios"><i class="fas fa-comments"></i> Comentários</a></li>
+        <li><a href="/logout" class="sair"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+    </ul>
+</div>
+
+<!-- Painel lateral de comentários -->
+<div id="comentario-lateral">
+    <div class="comentario-header">
+        <span id="trecho-chat">Comentando...</span>
+        <button onclick="fecharChat()">✖</button>
+    </div>
+    <div id="comentarios-lista"></div>
+    <textarea id="input-comentario" placeholder="Digite seu comentário..."></textarea>
+    <button onclick="enviarComentario()">Enviar</button>
+</div>
+
+{% if letra %}
+<div class="pagina">
+    <div class="card-letra">
+        <h2>Letra de "{{ musica }}" de {{ artista }}:</h2>
+
+        <button id="btn-favoritar" data-artista="{{ artista }}" data-musica="{{ musica }}">
+            ❤️ Favoritar
+        </button>
+
+        <div id="letra-container">
+            {% for linha in letra.split('\n') %}
+                {% if linha.strip() %}
+                    <div class="verso" data-id="{{ loop.index }}" onclick="carregarComentarios('{{ linha }}')">{{ linha }}</div>
+                {% else %}
+                    <br>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <button onclick="traduzir()" id="btn-traduzir">Traduzir Letra</button>
+        <pre id="letra-traduzida" style="display: none;"></pre>
+
+        <button onclick="window.history.back()" class="back-button">Voltar</button>
+
+        {% if video_url %}
+        <div class="video">
+            <h3>Vídeo relacionado do YouTube:</h3>
+            <iframe width="560" height="315" src="{{ video_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        {% else %}
+        <div class="video">
+            <h3>Vídeo não disponível ou ID incorreto.</h3>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="pagina">
+    <p style="margin-left: 250px;">Nenhuma música selecionada.</p>
+</div>
+{% endif %}
+
+<script>
+    const versos = document.querySelectorAll('.verso');
+    const painel = document.getElementById('comentario-lateral');
+    const trechoChat = document.getElementById('trecho-chat');
+    const lista = document.getElementById('comentarios-lista');
+    let versoSelecionado = '';
+
+    async function carregarComentarios(trecho) {
+        trechoChat.innerText = trecho;
+        painel.classList.add('show');
+        lista.innerHTML = "<p>Carregando comentários...</p>";
+
+        try {
+            const response = await fetch(`/comentarios-trecho?trecho=${encodeURIComponent(trecho)}&musica={{ musica }}&artista={{ artista }}`);
+
+            if (!response.ok) {
+                throw new Error('Erro na resposta: ' + response.status);
+            }
+
+            const data = await response.json();
+
+            if (data.comentarios && data.comentarios.length > 0) {
+                lista.innerHTML = '';
+                data.comentarios.forEach(c => {
+                    lista.innerHTML += `
+                        <div class="comentario-item">
+                           <img src="data:image/jpeg;base64,${c.foto || ''}" alt="Foto de ${c.nome}" class="comentario-foto" />
+                            <div class="comentario-texto">
+                                <strong>${c.nome}</strong>
+                                <small>${c.data_criacao}</small>
+                                ${c.comentario}
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                lista.innerHTML = '<p>🔥 Seja o primeiro a comentar!</p>';
+            }
+        } catch (err) {
+            console.error("Erro ao carregar comentários:", err);
+            lista.innerHTML = '<p>❌ Erro ao carregar comentários.</p>';
+        }
+    }
+
+    versos.forEach(verso => {
+        verso.addEventListener('click', () => {
+            versoSelecionado = verso.innerText;
+            carregarComentarios(versoSelecionado);
+        });
+    });
+
+    function fecharChat() {
+        painel.classList.remove('show');
+    }
+
+    async function enviarComentario() {
+        const comentario = document.getElementById('input-comentario').value.trim();
+        if (!comentario) return;
+
+        const payload = {
+            trecho: versoSelecionado,
+            comentario: comentario,
+            musica: "{{ musica }}",
+            artista: "{{ artista }}"
+        };
+
+        try {
+            const response = await fetch('/adicionar_comentario', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (result.mensagem) {
+                document.getElementById('input-comentario').value = '';
+                await carregarComentarios(versoSelecionado);
+            } else {
+                alert("Erro ao comentar: " + result.erro);
+            }
+        } catch (err) {
+            alert("Erro na requisição: " + err.message);
+        }
+    }
+
+    async function traduzir() {
+        const versos = Array.from(document.querySelectorAll('.verso')).map(v => v.innerText).join("\n");
+        const preTraduzida = document.getElementById("letra-traduzida");
+
+        try {
+            const response = await fetch("/traduzir", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ texto: versos })
+            });
+
+            const data = await response.json();
+            preTraduzida.innerText = data.traducao || "⚠️ Tradução não disponível.";
+        } catch (err) {
+            preTraduzida.innerText = "❌ Erro ao tentar traduzir a letra.";
+        }
+
+        preTraduzida.style.display = 'block';
+    }
+
+    document.getElementById('btn-favoritar').addEventListener('click', async () => {
+        const botao = document.getElementById('btn-favoritar');
+        const artista = botao.getAttribute('data-artista');
+        const musica = botao.getAttribute('data-musica');
+
+        if (!artista || !musica) {
+            alert("Erro: artista ou música não encontrados.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/favoritar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ artista, musica })
+            });
+
+            const result = await response.json();
+
+            if (result.mensagem) {
+                if (result.mensagem.includes("já está favoritada")) {
+                    alert("Esta música já está nos seus favoritos!");
+                } else {
+                    botao.textContent = "❤️ Favoritada"; 
+                    alert(result.mensagem);
+                }
+            } else if (result.erro) {
+                alert("Erro: " + result.erro);
+            }
+        } catch (error) {
+            alert("Erro ao favoritar: " + error.message);
+        }
+    });
+
+</script>
+
+</body>
+</html>

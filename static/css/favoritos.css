@@ -1,0 +1,136 @@
+body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.sidebar {
+    position: fixed;
+    width: 220px;
+    height: 100vh;
+    background-color: #000;
+    color: white;
+    padding-top: 20px;
+}
+
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-img {
+    width: 140px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.logo-img:hover {
+    transform: scale(1.05);
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    padding: 15px 20px;
+}
+
+.sidebar-menu a {
+    text-decoration: none;
+    color: #b3b3b3;
+    font-size: 16px;
+    display: block;
+    transition: 0.2s;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.sair:hover {
+    color: #1DB954;
+}
+
+.content {
+    margin-left: 240px;
+    padding: 40px;
+}
+
+h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.card {
+    background-color: #181818;
+    border: 1px solid #333;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+.card-title a {
+    text-decoration: none;
+    color: #1DB954;
+    font-size: 18px;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.card-title a:hover {
+    color: #b3b3b3;
+}
+
+.card-text {
+    color: #b3b3b3;
+    font-size: 14px;
+}
+
+button {
+    background-color: #1DB954;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #1ed760;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .content {
+        margin-left: 210px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 180px;
+    }
+
+    .content {
+        margin-left: 190px;
+    }
+
+    .logo-img {
+        width: 120px;
+    }
+}
